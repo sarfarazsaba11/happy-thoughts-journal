@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/useAuth";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function SiteHeader() {
   const { user } = useAuth();
@@ -8,22 +9,30 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-30 border-b border-border/60 bg-background/70 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-2xl items-center justify-between px-6 py-5">
+      <div className="mx-auto flex max-w-2xl items-center justify-between px-6 py-4">
         <Link to="/" className="group flex items-center gap-2">
-          <span className="text-lg">○</span>
+          <span className="text-lg bg-gradient-to-br from-fuchsia-400 via-rose-400 to-amber-300 bg-clip-text text-transparent">●</span>
           <span className="font-serif text-xl tracking-tight">Moodline</span>
         </Link>
-        <nav className="flex items-center gap-1 text-sm text-muted-foreground">
+        <nav className="flex items-center gap-2 text-sm text-muted-foreground">
           {user ? (
-            <button
-              onClick={async () => {
-                await supabase.auth.signOut();
-                navigate({ to: "/" });
-              }}
-              className="rounded-full px-3 py-1.5 transition hover:text-foreground"
-            >
-              Sign out
-            </button>
+            <>
+              <Link
+                to="/my"
+                className="rounded-full px-3 py-1.5 transition hover:text-foreground"
+              >
+                My entries
+              </Link>
+              <button
+                onClick={async () => {
+                  await supabase.auth.signOut();
+                  navigate({ to: "/" });
+                }}
+                className="rounded-full px-3 py-1.5 transition hover:text-foreground"
+              >
+                Sign out
+              </button>
+            </>
           ) : (
             <Link
               to="/auth"
@@ -32,6 +41,7 @@ export function SiteHeader() {
               Sign in
             </Link>
           )}
+          <ThemeToggle />
         </nav>
       </div>
     </header>
