@@ -46,9 +46,14 @@ function Home() {
         <header className="mb-16">
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Public feed</p>
           <h1 className="mt-3 font-serif text-4xl leading-tight tracking-tight sm:text-5xl">
-            How the world is <em className="italic">feeling</em> today.
+            How the world is{" "}
+            <em className="italic bg-gradient-to-r from-fuchsia-500 via-rose-400 to-amber-400 bg-clip-text text-transparent">
+              feeling
+            </em>{" "}
+            today.
           </h1>
         </header>
+
 
         {isLoading ? (
           <Skeletons />
