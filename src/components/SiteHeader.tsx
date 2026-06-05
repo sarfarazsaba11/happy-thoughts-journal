@@ -3,9 +3,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/useAuth";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
+const ADMIN_EMAIL = "admin@gmail.com";
+
 export function SiteHeader() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const isAdmin = user?.email === ADMIN_EMAIL;
 
   return (
     <header className="sticky top-0 z-30 border-b border-border/60 bg-background/70 backdrop-blur-xl">
@@ -23,6 +26,14 @@ export function SiteHeader() {
               >
                 My entries
               </Link>
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  className="rounded-full px-3 py-1.5 transition hover:text-foreground"
+                >
+                  Admin
+                </Link>
+              )}
               <button
                 onClick={async () => {
                   await supabase.auth.signOut();

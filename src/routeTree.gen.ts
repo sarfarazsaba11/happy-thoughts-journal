@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedWriteRouteImport } from './routes/_authenticated/write'
 import { Route as AuthenticatedMyRouteImport } from './routes/_authenticated/my'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedEditIdRouteImport } from './routes/_authenticated/edit.$id'
 
 const AuthRoute = AuthRouteImport.update({
@@ -40,6 +41,11 @@ const AuthenticatedMyRoute = AuthenticatedMyRouteImport.update({
   path: '/my',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedEditIdRoute = AuthenticatedEditIdRouteImport.update({
   id: '/edit/$id',
   path: '/edit/$id',
@@ -49,6 +55,7 @@ const AuthenticatedEditIdRoute = AuthenticatedEditIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/my': typeof AuthenticatedMyRoute
   '/write': typeof AuthenticatedWriteRoute
   '/edit/$id': typeof AuthenticatedEditIdRoute
@@ -56,6 +63,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/my': typeof AuthenticatedMyRoute
   '/write': typeof AuthenticatedWriteRoute
   '/edit/$id': typeof AuthenticatedEditIdRoute
@@ -65,20 +73,22 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/my': typeof AuthenticatedMyRoute
   '/_authenticated/write': typeof AuthenticatedWriteRoute
   '/_authenticated/edit/$id': typeof AuthenticatedEditIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/my' | '/write' | '/edit/$id'
+  fullPaths: '/' | '/auth' | '/admin' | '/my' | '/write' | '/edit/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/my' | '/write' | '/edit/$id'
+  to: '/' | '/auth' | '/admin' | '/my' | '/write' | '/edit/$id'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/admin'
     | '/_authenticated/my'
     | '/_authenticated/write'
     | '/_authenticated/edit/$id'
@@ -127,6 +137,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMyRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/edit/$id': {
       id: '/_authenticated/edit/$id'
       path: '/edit/$id'
@@ -138,12 +155,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedMyRoute: typeof AuthenticatedMyRoute
   AuthenticatedWriteRoute: typeof AuthenticatedWriteRoute
   AuthenticatedEditIdRoute: typeof AuthenticatedEditIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedMyRoute: AuthenticatedMyRoute,
   AuthenticatedWriteRoute: AuthenticatedWriteRoute,
   AuthenticatedEditIdRoute: AuthenticatedEditIdRoute,

@@ -11,6 +11,7 @@ type Entry = {
   id: string;
   mood: string;
   note: string;
+  image_url: string | null;
   is_public: boolean;
   created_at: string;
 };
@@ -30,7 +31,7 @@ function MyEntries() {
     queryFn: async (): Promise<Entry[]> => {
       const { data, error } = await supabase
         .from("mood_entries")
-        .select("id, mood, note, is_public, created_at")
+        .select("id, mood, note, image_url, is_public, created_at")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
       if (error) throw error;
@@ -109,6 +110,14 @@ function MyEntries() {
                       </p>
                     ) : (
                       <p className="text-[15px] italic text-muted-foreground">No words today.</p>
+                    )}
+                    {e.image_url && (
+                      <img
+                        src={e.image_url}
+                        alt=""
+                        loading="lazy"
+                        className="mt-4 max-h-80 w-full rounded-xl border border-border object-cover"
+                      />
                     )}
                     <div className="mt-3 flex items-center justify-between gap-3">
                       <p className="text-xs text-muted-foreground">

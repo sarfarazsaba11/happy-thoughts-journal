@@ -1,7 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { ImagePlus, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { uploadToCloudinary } from "@/lib/cloudinary";
 
 const MOODS = ["😊", "😌", "🙂", "😐", "😔", "😢", "😡", "🤯", "😴", "✨", "🔥", "🌧️"];
 
@@ -18,10 +20,33 @@ export const Route = createFileRoute("/_authenticated/write")({
 function WritePage() {
   const { user } = Route.useRouteContext();
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [mood, setMood] = useState<string | null>(null);
   const [note, setNote] = useState("");
   const [isPublic, setIsPublic] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Image must be under 10MB.");
+      return;
+    }
+    setUploading(true);
+    try {
+      const url = await uploadToCloudinary(file);
+      setImageUrl(url);
+      toast.success("Image uploaded.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Upload failed.");
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }
 
   async function handleSave() {
     if (!mood) {
@@ -34,6 +59,7 @@ function WritePage() {
       mood,
       note: note.trim(),
       is_public: isPublic,
+      image_url: imageUrl,
     });
     setSaving(false);
     if (error) {
@@ -99,6 +125,40 @@ function WritePage() {
           <p className="mt-2 text-right text-xs text-muted-foreground">{note.length}/2000</p>
         </section>
 
+        <section className="mt-10">
+          <p className="mb-4 text-xs uppercase tracking-widest text-muted-foreground">
+            Image <span className="normal-case tracking-normal">(optional)</span>
+          </p>
+          {imageUrl ? (
+            <div className="relative overflow-hidden rounded-2xl border border-border">
+              <img src={imageUrl} alt="Attached" className="max-h-96 w-full object-cover" />
+              <button
+                onClick={() => setImageUrl(null)}
+                className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-background/80 backdrop-blur transition hover:bg-background"
+                title="Remove image"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-card/40 p-8 text-sm text-muted-foreground transition hover:bg-card hover:text-foreground disabled:opacity-50"
+            >
+              <ImagePlus className="h-5 w-5" />
+              {uploading ? "Uploading…" : "Attach an image"}
+            </button>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFile}
+            className="hidden"
+          />
+        </section>
+
         <section className="mt-8 flex items-center justify-between rounded-2xl border border-border bg-card/60 p-5">
           <div>
             <p className="text-sm font-medium">Share publicly</p>
@@ -122,7 +182,7 @@ function WritePage() {
 
         <button
           onClick={handleSave}
-          disabled={saving}
+          disabled={saving || uploading}
           className="mt-10 h-12 w-full rounded-full bg-primary text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
         >
           {saving ? "Saving…" : "Save entry"}
