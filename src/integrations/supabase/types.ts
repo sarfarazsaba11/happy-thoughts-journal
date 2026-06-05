@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          image_url: string | null
           is_public: boolean
           mood: string
           note: string
@@ -26,6 +27,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          image_url?: string | null
           is_public?: boolean
           mood: string
           note?: string
@@ -34,6 +36,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          image_url?: string | null
           is_public?: boolean
           mood?: string
           note?: string
@@ -46,7 +49,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
