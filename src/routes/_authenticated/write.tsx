@@ -1,7 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { toast } from "sonner";
+import { ImagePlus, X, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { dataTagErrorSymbol } from "@tanstack/react-query";
+import { constructFromSymbol } from "date-fns/constants";
 
 const MOODS = ["😊", "😌", "🙂", "😐", "😔", "😢", "😡", "🤯", "😴", "✨", "🔥", "🌧️"];
 
@@ -22,6 +25,47 @@ function WritePage() {
   const [note, setNote] = useState("");
   const [isPublic, setIsPublic] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "ml_default"); // User should replace this or I can use a placeholder
+
+    try {
+      // Note: In a real app, you'd use your own cloud name
+     const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+     const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+  formData.append("file", file);
+  formData.append("upload_preset", "new-preset"); // ← required
+      console.log(cloudName)
+      console.log(uploadPreset)
+      console.log(formData)
+      const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      console.log(dataTagErrorSymbol)
+      if (data.secure_url) {
+        setImageUrl(data.secure_url);
+        toast.success("Image uploaded.");
+      } else {
+        throw new Error(data.error?.message || "Upload failed");
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Image upload failed");
+    } finally {
+      setUploading(false);
+    }
+  }
 
   async function handleSave() {
     if (!mood) {
@@ -29,11 +73,12 @@ function WritePage() {
       return;
     }
     setSaving(true);
-    const { error } = await supabase.from("mood_entries").insert({
+    const { error } = await supabase.from("entries").insert({
       user_id: user.id,
       mood,
       note: note.trim(),
       is_public: isPublic,
+      image_url: imageUrl,
     });
     setSaving(false);
     if (error) {
@@ -99,6 +144,43 @@ function WritePage() {
           <p className="mt-2 text-right text-xs text-muted-foreground">{note.length}/2000</p>
         </section>
 
+        <section className="mt-8">
+          <p className="mb-4 text-xs uppercase tracking-widest text-muted-foreground">Image</p>
+          {imageUrl ? (
+            <div className="relative aspect-video overflow-hidden rounded-2xl border border-border">
+              <img src={imageUrl} alt="Uploaded" className="h-full w-full object-cover" />
+              <button
+                onClick={() => setImageUrl(null)}
+                className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition hover:bg-black/70"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="flex w-full flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border bg-card/40 py-12 transition hover:bg-card/60"
+            >
+              {uploading ? (
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              ) : (
+                <>
+                  <ImagePlus className="h-6 w-6 text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground uppercase tracking-widest">Add an image</span>
+                </>
+              )}
+            </button>
+          )}
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleImageUpload}
+            accept="image/*"
+            className="hidden"
+          />
+        </section>
+
         <section className="mt-8 flex items-center justify-between rounded-2xl border border-border bg-card/60 p-5">
           <div>
             <p className="text-sm font-medium">Share publicly</p>
@@ -122,7 +204,7 @@ function WritePage() {
 
         <button
           onClick={handleSave}
-          disabled={saving}
+          disabled={saving || uploading}
           className="mt-10 h-12 w-full rounded-full bg-primary text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
         >
           {saving ? "Saving…" : "Save entry"}
@@ -131,3 +213,4 @@ function WritePage() {
     </div>
   );
 }
+

@@ -14,10 +14,11 @@ export type Database = {
   }
   public: {
     Tables: {
-      mood_entries: {
+      entries: {
         Row: {
           created_at: string
           id: string
+          image_url: string | null
           is_public: boolean
           mood: string
           note: string
@@ -26,6 +27,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          image_url?: string | null
           is_public?: boolean
           mood: string
           note?: string
@@ -34,10 +36,29 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          image_url?: string | null
           is_public?: boolean
           mood?: string
           note?: string
           user_id?: string
+        }
+        Relationships: []
+      },
+      profiles: {
+        Row: {
+          id: string
+          is_admin: boolean
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          is_admin?: boolean
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          is_admin?: boolean
+          updated_at?: string
         }
         Relationships: []
       }

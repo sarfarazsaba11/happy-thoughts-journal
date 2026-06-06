@@ -10,9 +10,11 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "@/components/ui/sonner";
+
+
+
 
 function NotFoundComponent() {
   return (
@@ -36,9 +38,6 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -61,7 +60,43 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   );
 }
 
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+import type { User } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
+
+type Profile = Database["public"]["Tables"]["profiles"]["Row"];
+
+export const Route = createRootRouteWithContext<{
+  queryClient: QueryClient;
+  user: User | null;
+  profile: Profile | null;
+}>()({
+  beforeLoad: async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    const user = session?.user ?? null;
+    let profile: Profile | null = null;
+
+    if (user) {
+      // const { data } = await supabase
+      //   .from("profiles")
+      //   .select("*")
+      //   .eq("id", user.id)
+      //   .single();
+      // profile = data;
+      const { data, error } = await supabase
+       .from("profiles")
+       .select("*")
+       .eq("id", user.id)
+       .single();
+       profile= data;
+
+console.log("profile data:", data);
+console.log("profile error:", error); // 👈 this will tell you exactly what's wrong
+    }
+
+    console.log(user)
+
+    return { user, profile };
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -112,7 +147,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AuthSync />
       <Outlet />
-      <Toaster theme="dark" position="bottom-center" />
+      <Toaster position="bottom-center" />
     </QueryClientProvider>
   );
 }

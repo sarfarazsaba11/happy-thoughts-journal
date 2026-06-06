@@ -11,6 +11,7 @@ type Entry = {
   id: string;
   mood: string;
   note: string;
+  image_url: string | null;
   is_public: boolean;
   created_at: string;
 };
@@ -29,8 +30,8 @@ function MyEntries() {
     queryKey: ["my-entries", user.id],
     queryFn: async (): Promise<Entry[]> => {
       const { data, error } = await supabase
-        .from("mood_entries")
-        .select("id, mood, note, is_public, created_at")
+        .from("entries")
+        .select("id, mood, note, image_url, is_public, created_at")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
       if (error) throw error;
@@ -40,7 +41,7 @@ function MyEntries() {
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this entry? This cannot be undone.")) return;
-    const { error } = await supabase.from("mood_entries").delete().eq("id", id);
+    const { error } = await supabase.from("entries").delete().eq("id", id);
     if (error) {
       toast.error(error.message);
       return;
@@ -52,7 +53,7 @@ function MyEntries() {
 
   async function togglePublic(entry: Entry) {
     const { error } = await supabase
-      .from("mood_entries")
+      .from("entries")
       .update({ is_public: !entry.is_public })
       .eq("id", entry.id);
     if (error) {
@@ -110,6 +111,13 @@ function MyEntries() {
                     ) : (
                       <p className="text-[15px] italic text-muted-foreground">No words today.</p>
                     )}
+
+                    {e.image_url && (
+                      <div className="mt-4 overflow-hidden rounded-xl border border-border/50">
+                        <img src={e.image_url} alt="Entry mood" className="aspect-video w-full object-cover" />
+                      </div>
+                    )}
+
                     <div className="mt-3 flex items-center justify-between gap-3">
                       <p className="text-xs text-muted-foreground">
                         {formatDistanceToNow(new Date(e.created_at), { addSuffix: true })}

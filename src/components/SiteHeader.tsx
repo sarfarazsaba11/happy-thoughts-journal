@@ -4,7 +4,7 @@ import { useAuth } from "@/lib/useAuth";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function SiteHeader() {
-  const { user } = useAuth();
+  const { user, profile, loading } = useAuth();
   const navigate = useNavigate();
 
   return (
@@ -15,14 +15,36 @@ export function SiteHeader() {
           <span className="font-serif text-xl tracking-tight">Moodline</span>
         </Link>
         <nav className="flex items-center gap-2 text-sm text-muted-foreground">
-          {user ? (
+          {loading ? (
+            <div className="h-8 w-20 animate-pulse rounded-full bg-muted" />
+          ) : user ? (
             <>
+              <Link
+                to="/"
+                className="rounded-full px-3 py-1.5 transition hover:text-foreground"
+              >
+                Feed
+              </Link>
+              <Link
+                to="/write"
+                className="rounded-full px-3 py-1.5 transition hover:text-foreground"
+              >
+                Write
+              </Link>
               <Link
                 to="/my"
                 className="rounded-full px-3 py-1.5 transition hover:text-foreground"
               >
                 My entries
               </Link>
+              {profile?.is_admin && (
+                <Link
+                  to="/admin"
+                  className="rounded-full px-3 py-1.5 transition hover:text-foreground font-medium text-primary"
+                >
+                  Admin
+                </Link>
+              )}
               <button
                 onClick={async () => {
                   await supabase.auth.signOut();
