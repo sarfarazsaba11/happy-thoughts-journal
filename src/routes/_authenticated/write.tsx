@@ -41,19 +41,16 @@ function WritePage() {
     try {
       // Note: In a real app, you'd use your own cloud name
      const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-     const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+    //  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
   formData.append("file", file);
   formData.append("upload_preset", "new-preset"); // ← required
-      console.log(cloudName)
-      console.log(uploadPreset)
-      console.log(formData)
       const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
         method: "POST",
         body: formData,
       });
       const data = await response.json();
-      console.log(dataTagErrorSymbol)
+
       if (data.secure_url) {
         setImageUrl(data.secure_url);
         toast.success("Image uploaded.");

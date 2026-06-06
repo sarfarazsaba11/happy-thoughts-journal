@@ -9,7 +9,6 @@ import { SiteHeader } from "@/components/SiteHeader";
 export const Route = createFileRoute("/_authenticated/admin")({
   
 beforeLoad: ({ context }) => {
-  console.log("acbd",context.profile?.is_admin)
   if (!context.profile?.is_admin) {
     throw redirect({ to: "/" });
   }

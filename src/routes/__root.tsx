@@ -89,11 +89,8 @@ export const Route = createRootRouteWithContext<{
        .single();
        profile= data;
 
-console.log("profile data:", data);
-console.log("profile error:", error); // 👈 this will tell you exactly what's wrong
     }
 
-    console.log(user)
 
     return { user, profile };
   },

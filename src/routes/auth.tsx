@@ -65,10 +65,6 @@ function AuthPage() {
     }
   }
 
-  console.log(import.meta.env.VITE_SUPABASE_URL)
-console.log(import.meta.env.VITE_SUPABASE_KEY)
-console.log(import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY)
-
 
   return (
     <div className="flex min-h-screen flex-col">
