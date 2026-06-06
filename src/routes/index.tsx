@@ -30,7 +30,11 @@ function Home() {
     queryKey: ["public-feed"],
     queryFn: async (): Promise<Entry[]> => {
       const { data, error } = await supabase
+<<<<<<< HEAD
         .from("entries")
+=======
+        .from("mood_entries")
+>>>>>>> 80ea3c9f6aa94841f7e19f0829eae06f36a78062
         .select("id, mood, note, image_url, created_at")
         .eq("is_public", true)
         .order("created_at", { ascending: false })
@@ -88,6 +92,7 @@ function EntryCard({ entry }: { entry: Entry }) {
           ) : (
             <p className="text-[15px] italic text-muted-foreground">No words today.</p>
           )}
+<<<<<<< HEAD
           
           {entry.image_url && (
             <div className="mt-4 overflow-hidden rounded-xl border border-border/50">
@@ -95,6 +100,16 @@ function EntryCard({ entry }: { entry: Entry }) {
             </div>
           )}
 
+=======
+          {entry.image_url && (
+            <img
+              src={entry.image_url}
+              alt=""
+              loading="lazy"
+              className="mt-4 max-h-80 w-full rounded-xl border border-border object-cover"
+            />
+          )}
+>>>>>>> 80ea3c9f6aa94841f7e19f0829eae06f36a78062
           <p className="mt-3 text-xs text-muted-foreground">
             {formatDistanceToNow(new Date(entry.created_at), { addSuffix: true })}
           </p>

@@ -30,7 +30,11 @@ function MyEntries() {
     queryKey: ["my-entries", user.id],
     queryFn: async (): Promise<Entry[]> => {
       const { data, error } = await supabase
+<<<<<<< HEAD
         .from("entries")
+=======
+        .from("mood_entries")
+>>>>>>> 80ea3c9f6aa94841f7e19f0829eae06f36a78062
         .select("id, mood, note, image_url, is_public, created_at")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
@@ -111,6 +115,7 @@ function MyEntries() {
                     ) : (
                       <p className="text-[15px] italic text-muted-foreground">No words today.</p>
                     )}
+<<<<<<< HEAD
 
                     {e.image_url && (
                       <div className="mt-4 overflow-hidden rounded-xl border border-border/50">
@@ -118,6 +123,16 @@ function MyEntries() {
                       </div>
                     )}
 
+=======
+                    {e.image_url && (
+                      <img
+                        src={e.image_url}
+                        alt=""
+                        loading="lazy"
+                        className="mt-4 max-h-80 w-full rounded-xl border border-border object-cover"
+                      />
+                    )}
+>>>>>>> 80ea3c9f6aa94841f7e19f0829eae06f36a78062
                     <div className="mt-3 flex items-center justify-between gap-3">
                       <p className="text-xs text-muted-foreground">
                         {formatDistanceToNow(new Date(e.created_at), { addSuffix: true })}
