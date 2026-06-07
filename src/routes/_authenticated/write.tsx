@@ -37,15 +37,15 @@ function WritePage() {
     setUploading(true);
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", "ml_default"); // User should replace this or I can use a placeholder
+    formData.append("upload_preset", import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET); // User should replace this or I can use a placeholder
 
     try {
       // Note: In a real app, you'd use your own cloud name
      const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-    //  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+      const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
   formData.append("file", file);
-  formData.append("upload_preset", "new-preset"); // ← required
+  formData.append("upload_preset",uploadPreset); // ← required
       const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
         method: "POST",
         body: formData,
