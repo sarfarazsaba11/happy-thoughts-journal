@@ -35,7 +35,7 @@ function WritePage() {
   const [note, setNote] = useState("");
   const [isPublic, setIsPublic] = useState(false);
   const [saving, setSaving] = useState(false);
-<<<<<<< HEAD
+
   const [uploading, setUploading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -72,28 +72,7 @@ function WritePage() {
       toast.error(err instanceof Error ? err.message : "Image upload failed");
     } finally {
       setUploading(false);
-=======
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
 
-  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("Image must be under 10MB.");
-      return;
-    }
-    setUploading(true);
-    try {
-      const url = await uploadToCloudinary(file);
-      setImageUrl(url);
-      toast.success("Image uploaded.");
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Upload failed.");
-    } finally {
-      setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
->>>>>>> 80ea3c9f6aa94841f7e19f0829eae06f36a78062
     }
   }
 
