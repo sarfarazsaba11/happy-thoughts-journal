@@ -1,19 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-<<<<<<< HEAD
 import { useState, useRef } from "react";
-=======
-import { useRef, useState } from "react";
-import { ImagePlus, X } from "lucide-react";
->>>>>>> 80ea3c9f6aa94841f7e19f0829eae06f36a78062
 import { toast } from "sonner";
 import { ImagePlus, X, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-<<<<<<< HEAD
 import { dataTagErrorSymbol } from "@tanstack/react-query";
 import { constructFromSymbol } from "date-fns/constants";
-=======
-import { uploadToCloudinary } from "@/lib/cloudinary";
->>>>>>> 80ea3c9f6aa94841f7e19f0829eae06f36a78062
 
 const MOODS = ["😊", "😌", "🙂", "😐", "😔", "😢", "😡", "🤯", "😴", "✨", "🔥", "🌧️"];
 

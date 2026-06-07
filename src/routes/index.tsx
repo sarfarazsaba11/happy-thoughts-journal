@@ -30,11 +30,7 @@ function Home() {
     queryKey: ["public-feed"],
     queryFn: async (): Promise<Entry[]> => {
       const { data, error } = await supabase
-<<<<<<< HEAD
         .from("entries")
-=======
-        .from("mood_entries")
->>>>>>> 80ea3c9f6aa94841f7e19f0829eae06f36a78062
         .select("id, mood, note, image_url, created_at")
         .eq("is_public", true)
         .order("created_at", { ascending: false })
